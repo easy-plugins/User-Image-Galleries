@@ -1,6 +1,6 @@
 <?php
 /*
-Plugin Name: ImagePress
+Plugin Name: Easy Plugins: User Photo Gallery
 Plugin URI: https://getbutterfly.com/wordpress-plugins/imagepress/
 Description: Create a user-powered image gallery or an image upload site, using nothing but WordPress custom posts. Moderate image submissions and integrate the plugin into any theme.
 Version: 7.9.3
