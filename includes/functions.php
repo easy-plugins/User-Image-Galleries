@@ -9,7 +9,7 @@ function imagepress_registration() {
     $image_type_labels = [
         'name'                  => _x('Images', 'Post type general name', 'imagepress'),
         'singular_name'         => _x('Image', 'Post type singular name', 'imagepress'),
-        'menu_name'             => __('ImagePress', 'imagepress'),
+        'menu_name'             => __('User Photo Gallery', 'imagepress'),
         'name_admin_bar'        => __('Image', 'imagepress'),
         'archives'              => __('Image archives', 'imagepress'),
         'parent_item_colon'     => __('Parent image:', 'imagepress'),
