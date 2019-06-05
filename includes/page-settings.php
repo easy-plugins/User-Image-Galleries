@@ -32,18 +32,7 @@ function imagepress_admin_page() {
             // Get the WP built-in version
             $ipdata = get_plugin_data(IP_PLUGIN_FILE_PATH);
 
-            echo '<div id="gb-ad">
-                <h3 class="gb-handle">Thank you for using ImagePress!</h3>
-                <div id="gb-ad-content">
-                    <div class="inside">
-                        <p>If you enjoy this plugin, do not forget to <a href="https://codecanyon.net/item/imagepress/4252736" rel="external">rate it on CodeCanyon</a>! We work hard to update it, fix bugs, add new features and make it compatible with the latest web technologies.</p>
-                    </div>
-                    <div class="gb-footer">
-                        <p>For support, feature requests and bug reporting, please visit the <a href="https://getbutterfly.com/" rel="external">official website</a>.<br>Built by <a href="https://getbutterfly.com/" rel="external"><strong>getButterfly</strong>.com</a> &middot; <a href="https://getbutterfly.com/support/documentation/imagepress/">Documentation</a> &middot; <small>Code wrangling since 2005</small></p>
-                    </div>
-                </div>
-            </div>
-
+            echo '
             <p>
                 <small>You are using ImagePress plugin version <strong>' . (string) trim($ipdata['Version']) . '</strong>.</small><br>
                 <small>You are using PHP version ' . (string) trim(PHP_VERSION) . ' and MySQL server version ' . $wpdb->db_version() . '.</small>
