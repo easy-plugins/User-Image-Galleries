@@ -108,7 +108,7 @@ add_filter('the_content', 'imagepress_content_filter');
 function imagepress_menu() {
     global $menu, $submenu;
 
-    add_submenu_page('edit.php?post_type=' . get_imagepress_option('ip_slug'), 'ImagePress Settings', 'ImagePress Settings', 'manage_options', 'imagepress_admin_page', 'imagepress_admin_page');
+    add_submenu_page('edit.php?post_type=' . get_imagepress_option('ip_slug'), __( 'Settings', 'imagepress' ), __( 'Settings', 'imagepress' ), 'manage_options', 'imagepress_admin_page', 'imagepress_admin_page');
 
     //$url = 'https://getbutterfly.com/support/documentation/imagepress/';
     //$submenu['edit.php?post_type=' . get_imagepress_option('ip_slug')][] = ['<span style="color: #F1C40F;">Documentation</span>', 'manage_options', $url];
