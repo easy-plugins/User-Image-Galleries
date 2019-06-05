@@ -57,7 +57,15 @@ add_action('wp_ajax_editCollectionStatus', 'editCollectionStatus');
 add_action('wp_ajax_deleteCollection', 'deleteCollection');
 add_action('wp_ajax_deleteCollectionImage', 'deleteCollectionImage');
 
+add_action('wp_ajax_ip_collection_display', 'ip_collection_display');
 add_action('wp_ajax_ip_collections_display', 'ip_collections_display');
+
+function ip_collection_display() {
+    $collectionId = intval($_POST['collection_id']);
+
+    echo do_shortcode('[imagepress-collection collection="1" collection_id="' . $collectionId . '"]');
+    die();
+}
 
 function ip_collection_count($author) {
     global $wpdb;
@@ -87,7 +95,7 @@ function ip_collections_display() {
             echo '<div class="ip_collections_overlay">' . (((int) $collection['collection_status'] === 0) ? '<i class="fas fa-lock"></i>' : '<i class="fas fa-unlock"></i>') . ' ' . count($postslistcount) . '</div>';
 
             echo '<div class="collection_details">';
-                echo '<h3 class="collection-title" data-collection-id="' . $collection['collection_ID'] . '">' . $collection['collection_title'] . '</h3>';
+                echo '<h3 class="collection-title" data-collection-id="' . $collection['collection_ID'] . '"><a href="#" class="editCollection" data-collection-id="' . $collection['collection_ID'] . '">' . $collection['collection_title'] . '</a></h3>';
 
                 echo '<div><a href="#" class="changeCollection button noir-secondary" data-collection-id="' . $collection['collection_ID'] . '">' . esc_html__('Edit', 'imagepress') . '</a></div>';
             echo '</div>';
@@ -301,13 +309,13 @@ function ip_frontend_view_image_collection($ip_id) {
 
 function imagepress_collection($atts) {
     extract(shortcode_atts([
-        'count' => 0,
-        'limit' => 999999,
-        'columns' => '',
-        'type' => '', // 'random'
-        'collection' => '', // new parameter (will extract all images from a certain collection)
+        'count'         => 0,
+        'limit'         => 999999,
+        'columns'       => '',
+        'type'          => '', // 'random'
+        'collection'    => '', // new parameter (will extract all images from a certain collection)
         'collection_id' => '', // new parameter (will extract all images from a certain collection)
-        'order' => '' // only used by profile viewer
+        'order'         => '' // only used by profile viewer
     ], $atts));
 
     global $wpdb;
@@ -375,6 +383,13 @@ function imagepress_collection($atts) {
                     // image ID
 
                     $out .= ipRenderGridElement($user_image);
+
+                    /**
+                    $logged_in_user = wp_get_current_user();
+                    if ($collection_row['collection_author_ID'] == $logged_in_user->ID) {
+                        $out .= '<div class="ip_box_bottom"><a href="#" class="deleteCollectionImage" data-image-id="' . $i . '">Remove</a></div>';
+                    }
+                    /**/
                 }
             }
             // end loop

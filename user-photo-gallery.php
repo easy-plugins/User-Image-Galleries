@@ -70,7 +70,15 @@ include IP_PLUGIN_PATH . '/modules/mod-user-following.php';
 include IP_PLUGIN_PATH . '/modules/mod-likes.php';
 include IP_PLUGIN_PATH . '/modules/mod-notifications.php';
 
-include IP_PLUGIN_PATH . '/modules/mod-collections.php';
+if (get_imagepress_option('ip_mod_collections') == 1) {
+    include IP_PLUGIN_PATH . '/modules/mod-collections.php';
+}
+
+// user classes
+if (get_imagepress_option('cinnamon_mod_login') == 1) {
+    include IP_PLUGIN_PATH . '/classes/Frontend.php';
+}
+//
 
 include IP_PLUGIN_PATH . '/includes/shortcodes.php';
 
@@ -307,16 +315,18 @@ function imagepress_add($atts) {
             //
 
             // collections
-            $ip_collections = (int) ($_POST['ip_collections']);
+            if ((int) get_imagepress_option('ip_mod_collections') === 1) {
+                $ip_collections = (int) ($_POST['ip_collections']);
 
-            if (!empty($_POST['ip_collections_new'])) {
-                $ip_collections_new = sanitize_text_field($_POST['ip_collections_new']);
-                $ip_collection_status = (int) ($_POST['collection_status']);
+                if (!empty($_POST['ip_collections_new'])) {
+                    $ip_collections_new = sanitize_text_field($_POST['ip_collections_new']);
+                    $ip_collection_status = (int) ($_POST['collection_status']);
 
-                $wpdb->query($wpdb->prepare("INSERT INTO " . $wpdb->prefix . "ip_collections (collection_title, collection_status, collection_author_ID) VALUES (%s, %d, %d)", $ip_collections_new, $ip_collection_status, $ip_image_author));
-                $wpdb->query($wpdb->prepare("INSERT INTO " . $wpdb->prefix . "ip_collectionmeta (image_ID, image_collection_ID, image_collection_author_ID) VALUES (%d,  %d,  %d)", $post_id, $wpdb->insert_id, $ip_image_author));
-            } else {
-                $wpdb->query($wpdb->prepare("INSERT INTO " . $wpdb->prefix . "ip_collectionmeta (image_ID, image_collection_ID, image_collection_author_ID) VALUES (%d,  %d,  %d)", $post_id, $ip_collections, $ip_image_author));
+                    $wpdb->query($wpdb->prepare("INSERT INTO " . $wpdb->prefix . "ip_collections (collection_title, collection_status, collection_author_ID) VALUES (%s, %d, %d)", $ip_collections_new, $ip_collection_status, $ip_image_author));
+                    $wpdb->query($wpdb->prepare("INSERT INTO " . $wpdb->prefix . "ip_collectionmeta (image_ID, image_collection_ID, image_collection_author_ID) VALUES (%d,  %d,  %d)", $post_id, $wpdb->insert_id, $ip_image_author));
+                } else {
+                    $wpdb->query($wpdb->prepare("INSERT INTO " . $wpdb->prefix . "ip_collectionmeta (image_ID, image_collection_ID, image_collection_author_ID) VALUES (%d,  %d,  %d)", $post_id, $ip_collections, $ip_image_author));
+                }
             }
             //
 
@@ -407,16 +417,18 @@ function imagepress_add_bulk($atts) {
             }
 
             // collections
-            $ip_collections = (int) ($_POST['ip_collections']);
+            if ((int) get_imagepress_option('ip_mod_collections') === 1) {
+                $ip_collections = (int) ($_POST['ip_collections']);
 
-            if (!empty($_POST['ip_collections_new'])) {
-                $ip_collections_new = sanitize_text_field($_POST['ip_collections_new']);
-                $ip_collection_status = (int) ($_POST['collection_status']);
+                if (!empty($_POST['ip_collections_new'])) {
+                    $ip_collections_new = sanitize_text_field($_POST['ip_collections_new']);
+                    $ip_collection_status = (int) ($_POST['collection_status']);
 
-                $wpdb->query($wpdb->prepare("INSERT INTO " . $wpdb->prefix . "ip_collections (collection_title, collection_status, collection_author_ID) VALUES (%s, %d, %d)", $ip_collections_new, $ip_collection_status, $ip_image_author));
-                $wpdb->query($wpdb->prepare("INSERT INTO " . $wpdb->prefix . "ip_collectionmeta (image_ID, image_collection_ID, image_collection_author_ID) VALUES (%d,  %d,  %d)", $post_id, $wpdb->insert_id, $ip_image_author));
-            } else {
-                $wpdb->query($wpdb->prepare("INSERT INTO " . $wpdb->prefix . "ip_collectionmeta (image_ID, image_collection_ID, image_collection_author_ID) VALUES (%d,  %d,  %d)", $post_id, $ip_collections, $ip_image_author));
+                    $wpdb->query($wpdb->prepare("INSERT INTO " . $wpdb->prefix . "ip_collections (collection_title, collection_status, collection_author_ID) VALUES (%s, %d, %d)", $ip_collections_new, $ip_collection_status, $ip_image_author));
+                    $wpdb->query($wpdb->prepare("INSERT INTO " . $wpdb->prefix . "ip_collectionmeta (image_ID, image_collection_ID, image_collection_author_ID) VALUES (%d,  %d,  %d)", $post_id, $wpdb->insert_id, $ip_image_author));
+                } else {
+                    $wpdb->query($wpdb->prepare("INSERT INTO " . $wpdb->prefix . "ip_collectionmeta (image_ID, image_collection_ID, image_collection_author_ID) VALUES (%d,  %d,  %d)", $post_id, $ip_collections, $ip_image_author));
+                }
             }
             //
         }
@@ -511,22 +523,16 @@ function imagepress_get_upload_image_form($ipImageCaption = '', $ipImageCategory
     // get upload limit per user role
     $userRoleQuota = get_imagepress_option('ip_role_quota');
 
-    // Role quotes have been defined
-    if ( is_array($userRoleQuota) && ! empty($userRoleQuota) ) {
-        $user_meta = get_userdata($current_user->ID);
-        $user_roles = $user_meta->roles; //array of roles the user is part of.
-        $userRole = $user_roles[0];
+    $user_meta = get_userdata($current_user->ID);
+    $user_roles = $user_meta->roles; //array of roles the user is part of.
+    $userRole = $user_roles[0];
 
-        $all_roles = $wp_roles->roles;
-        $editable_roles = apply_filters('editable_roles', $all_roles);
-        foreach ($editable_roles as $role => $details) {
-            if ((string) $userRole === (string) str_replace('-', '_', sanitize_title($details['name']))) {
-                $ip_role_limit = $userRoleQuota[$details['name']];
-            }
+    $all_roles = $wp_roles->roles;
+    $editable_roles = apply_filters('editable_roles', $all_roles);
+    foreach ($editable_roles as $role => $details) {
+        if ((string) $userRole === (string) str_replace('-', '_', sanitize_title($details['name']))) {
+            $ip_role_limit = $userRoleQuota[$details['name']];
         }
-    } // No roles quota defined, set upload limit to default 1000
-    else {
-        $ip_role_limit = 1000;
     }
 
     $out = '<div class="ip-uploader" id="fileuploads" data-user-uploads="' . $user_uploads . '" data-upload-limit="' . $ip_upload_limit . '" data-role-limit="' . $ip_role_limit . '">
@@ -560,7 +566,9 @@ function imagepress_get_upload_image_form($ipImageCaption = '', $ipImageCategory
             $out .= '</p>';
 
             // Add to collection on upload
-            $out .= ip_collection_dropdown();
+            if ((int) get_imagepress_option('ip_mod_collections') === 1) {
+                $out .= ip_collection_dropdown();
+            }
 
             // Custom fields
             $result = $wpdb->get_results("SELECT * FROM " . $wpdb->prefix . "ip_fields ORDER BY field_order ASC", ARRAY_A);
@@ -678,7 +686,9 @@ function imagepress_get_upload_image_form_bulk($ipImageCategory = 0, $imagepress
                 $out .= '</p>';
 
                 // Add to collection on upload
-                $out .= ip_collection_dropdown();
+                if ((int) get_imagepress_option('ip_mod_collections') === 1) {
+                    $out .= ip_collection_dropdown();
+                }
 
                 $uploadsize = number_format((($ip_upload_size * 1024)/1024000), 0, '.', '');
                 $datauploadsize = $uploadsize * 1024000;
@@ -734,7 +744,7 @@ function imagepress_activate() {
 
     // notifications table
     $table_name = $wpdb->prefix . 'notifications';
-    if ($wpdb->get_var("SHOW TABLES LIKE '{$table_name}'") != $table_name) {
+    if ($wpdb->get_var("SHOW TABLES LIKE `$table_name`") != $table_name) {
         $sql = "CREATE TABLE IF NOT EXISTS `$table_name` (
             `ID` int(11) NOT NULL AUTO_INCREMENT,
             `userID` int(11) NOT NULL,
@@ -753,7 +763,7 @@ function imagepress_activate() {
 
     // collections table
     $table_name = $wpdb->prefix . 'ip_collections';
-    if ($wpdb->get_var("SHOW TABLES LIKE '{$table_name}'") != $table_name) {
+    if ($wpdb->get_var("SHOW TABLES LIKE `$table_name`") != $table_name) {
         $sql = "CREATE TABLE IF NOT EXISTS `$table_name` (
             `collection_ID` int(11) NOT NULL AUTO_INCREMENT,
             `collection_title` mediumtext COLLATE utf8_unicode_ci NOT NULL,
@@ -768,7 +778,7 @@ function imagepress_activate() {
         maybe_convert_table_to_utf8mb4($table_name);
     }
     $table_name = $wpdb->prefix . 'ip_collectionmeta';
-    if ($wpdb->get_var("SHOW TABLES LIKE '{$table_name}'") != $table_name) {
+    if ($wpdb->get_var("SHOW TABLES LIKE `$table_name`") != $table_name) {
         $sql = "CREATE TABLE IF NOT EXISTS `$table_name` (
             `image_meta_ID` int(11) NOT NULL AUTO_INCREMENT,
             `image_ID` int(11) NOT NULL,
@@ -784,7 +794,7 @@ function imagepress_activate() {
 
     // custom fields table
     $table_name = $wpdb->prefix . 'ip_fields';
-    if ($wpdb->get_var("SHOW TABLES LIKE '{$table_name}'") != $table_name) {
+    if ($wpdb->get_var("SHOW TABLES LIKE `$table_name`") != $table_name) {
         $sql = "CREATE TABLE IF NOT EXISTS `$table_name` (
             `field_id` int(11) NOT NULL AUTO_INCREMENT,
             `field_order` int(11) NOT NULL,
@@ -1003,10 +1013,10 @@ if ((int) get_option('use_bulk_upload') === 1) {
 }
 
 function ip_lightbox_load_scripts() {
-    wp_enqueue_script('halka', plugin_dir_url(__FILE__) . 'assets/halkabox/halkaBox.min.js', [], '1.4.0', true);
-    wp_enqueue_script('halka-init', plugin_dir_url(__FILE__) . 'assets/halkabox/halkaBox.init.js', ['halka'], '1.4.0', true);
+    wp_enqueue_script('halka', plugin_dir_url(__FILE__) . 'assets/halkabox/halkaBox.min.js', [], '1.5.1', true);
+    wp_enqueue_script('halka-init', plugin_dir_url(__FILE__) . 'assets/halkabox/halkaBox.init.js', ['halka'], '1.5.1', true);
 
-    wp_enqueue_style('halka-style', plugin_dir_url(__FILE__) . 'assets/halkabox/halkaBox.min.css');
+    wp_enqueue_style('halka-style', plugin_dir_url(__FILE__) . 'assets/halkabox/halkaBox.min.css', [], '1.5.1');
 }
 
 if ((int) get_option('use_lightbox') === 1) {
