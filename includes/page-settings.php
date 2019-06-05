@@ -2,7 +2,7 @@
 function imagepress_admin_page() {
     ?>
     <div class="wrap">
-        <h1>ImagePress Settings</h1>
+        <h1><?php _e( 'Settings', 'imagepress' ); ?></h1>
 
         <?php
         $ipSlug = get_imagepress_option('ip_slug');
