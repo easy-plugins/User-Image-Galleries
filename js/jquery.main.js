@@ -467,7 +467,7 @@ document.addEventListener('DOMContentLoaded', function () {
         jQuery('.frontEndModal').toggleClass('active');
         e.preventDefault();
     });
-    jQuery('.toggleFrontEndModal .close').on('click', function (e) {
+    jQuery('.toggleFrontEndModal.close').on('click', function (e) {
         jQuery('.frontEndModal').toggleClass('active');
         e.preventDefault();
     });
