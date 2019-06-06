@@ -1023,7 +1023,8 @@ function ip_lightbox_load_scripts() {
     wp_enqueue_style('halka-style', plugin_dir_url(__FILE__) . 'assets/halkabox/halkaBox.min.css', [], '1.5.1');
 }
 
-if ((int) get_option('use_lightbox') === 1) {
+// Enable lightboix by default for now.
+if ( TRUE /*(int) get_option('use_lightbox') === 1*/) {
     add_action('wp_enqueue_scripts', 'ip_lightbox_load_scripts');
 }
 
