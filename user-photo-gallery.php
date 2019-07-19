@@ -541,7 +541,7 @@ function imagepress_get_upload_image_form($ipImageCaption = '', $ipImageCategory
 
     $out = '<div class="ip-uploader" id="fileuploads" data-user-uploads="' . $user_uploads . '" data-upload-limit="' . $ip_upload_limit . '" data-role-limit="' . $ip_role_limit . '">
         <form id="imagepress_upload_image_form" method="post" action="" enctype="multipart/form-data" class="imagepress-form imagepress-upload-form">';
-            $out .= wp_nonce_field('imagepress_upload_image_form', 'imagepress_upload_image_form_submitted');
+            $out .= wp_nonce_field('imagepress_upload_image_form', 'imagepress_upload_image_form_submitted', TRUE, FALSE );
 
             if (!empty($ip_caption_label))
                 $out .= '<p>
@@ -677,7 +677,7 @@ function imagepress_get_upload_image_form_bulk($ipImageCategory = 0, $imagepress
 
     $out = '<div class="ip-uploader">
         <form id="imagepress_upload_image_form_bulk" method="post" action="" enctype="multipart/form-data" class="imagepress-upload-form">';
-            $out .= wp_nonce_field('imagepress_upload_image_form_bulk', 'imagepress_upload_image_form_submitted_bulk');
+            $out .= wp_nonce_field('imagepress_upload_image_form_bulk', 'imagepress_upload_image_form_submitted_bulk', TRUE, FALSE );
 
             $out .= '<div id="fileuploads">
                 <p>';
